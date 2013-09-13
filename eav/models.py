@@ -335,7 +335,7 @@ class Value(models.Model):
     '''
 
     entity_ct = models.ForeignKey(ContentType, related_name='value_entities')
-    entity_id = models.IntegerField()
+    entity_id = models.CharField(max_length=32)
     entity = generic.GenericForeignKey(ct_field='entity_ct',
                                        fk_field='entity_id')
 
@@ -445,14 +445,14 @@ class Entity(object):
 
     def _hasattr(self, attribute_slug):
         '''
-        Since we override __getattr__ with a backdown to the database, this exists as a way of 
+        Since we override __getattr__ with a backdown to the database, this exists as a way of
         checking whether a user has set a real attribute on ourselves, without going to the db if not
         '''
         return attribute_slug in self.__dict__
 
     def _getattr(self, attribute_slug):
         '''
-        Since we override __getattr__ with a backdown to the database, this exists as a way of 
+        Since we override __getattr__ with a backdown to the database, this exists as a way of
         getting the value a user set for one of our attributes, without going to the db to check
         '''
         return self.__dict__[attribute_slug]
@@ -481,7 +481,7 @@ class Entity(object):
                 value = self._getattr(attribute.slug)
             else:
                 value = values_dict.get(attribute.slug, None)
-            
+
             if value is None:
                 if attribute.required:
                     raise ValidationError(_(u"%(attr)s EAV field cannot " \
@@ -494,7 +494,7 @@ class Entity(object):
                     raise ValidationError(_(u"%(attr)s EAV field %(err)s") % \
                                               {'attr': attribute.slug,
                                                'err': e})
-                
+
     def get_values_dict(self):
         values_dict = dict()
         for value in self.get_values():
